@@ -30,6 +30,7 @@ def get_article_list(page=''):
     auth = OAuth1Session(CK, CS, AT, AS)
 
     # 結果はXML形式なのでパースして木構造にする
+    # (9) アクセストークンを使って記事一覧を取得
     root = ET.fromstring(
             # auth.get('https://blog.hatena.ne.jp/panda_noir/panda-noir.hatenablog.jp/atom/entry', params={'page': page})
             auth.get('https://blog.hatena.ne.jp/{userid}/{blogid}/atom/entry', params={'page': page})

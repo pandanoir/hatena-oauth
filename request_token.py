@@ -18,21 +18,23 @@ def oauth_requests():
     # Get request token
     params = {"scope": "read_private,write_private"}
     auth = OAuth1(consumer_key, consumer_secret, callback_uri='oob')
-    r = post('https://www.hatena.com/oauth/initiate', data=params, auth=auth)
-    request_token = dict(parse_qsl(r.text))
+    r = post('https://www.hatena.com/oauth/initiate', data=params, auth=auth) # (1) Consumer KeyとConsumer Secretを使ってはてなブログへアクセス
+    request_token = dict(parse_qsl(r.text)) # (2) リクエストトークンを取得
 
     # サーバー上にプログラムを上げていた関係で、ブラウザで直接開けなかったのでURLを表示する形式とした
-    print('%s?oauth_token=%s&perms=delete' % ('https://www.hatena.com/oauth/authorize', request_token['oauth_token']))
-    # webbrowser.open('%s?oauth_token=%s&perms=delete' % ('https://www.hatena.com/oauth/authorize', request_token['oauth_token']))  # ブラウザを開きOAuth認証確認画面を表示 ユーザーが許可するとPINコードが表示される
+    print('%s?oauth_token=%s&perms=delete' % ('https://www.hatena.com/oauth/authorize', request_token['oauth_token'])) # (3) はてなブログの認証用ページにリクエストトークンとともにアクセス.
+    # (4) ユーザーが認証する
+    # (5) はてなブログがPINコードを発行
 
-    oauth_verifier = input("Please input PIN code:")
+
+    oauth_verifier = input("Please input PIN code:") # (5) ユーザーからPINコードを入力される
     auth = OAuth1(
         consumer_key,
         consumer_secret,
         request_token['oauth_token'],
         request_token['oauth_token_secret'],
         verifier=oauth_verifier)
-    r = post('https://www.hatena.com/oauth/token', auth=auth)
+    r = post('https://www.hatena.com/oauth/token', auth=auth) # (6)アプリは取得したPINコードを使ってはてなブログへアクセス. (7) はてなブログからアクセストークンが発行される
 
     write_access_token(dict(parse_qsl(r.text)))
 
